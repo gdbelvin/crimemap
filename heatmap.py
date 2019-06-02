@@ -40,12 +40,20 @@ if False:
 
 # Crime HeatMap
 if True:
-    crime_data = 'police_data/crime/2019-03-metropolitan-street.csv'
-    df_crime = pd.read_csv(crime_data)
-    df_crime = df_crime.dropna(subset=['Latitude', 'Longitude'])
-    # df_crime = df_crime[df_crime['LSOA code'].isin(['E05000631'])]
-    crime_arr = df_crime[['Latitude', 'Longitude']].values
-    m.add_child(plugins.HeatMap(crime_arr, radius=12))
+    crime_data = 'police_data/crime/'
+    crime_dfs = []
+    i = 0
+    for path in glob.glob(f'{crime_data}/*.csv'):
+        df_crime = pd.read_csv(path, usecols = ['Latitude', 'Longitude'])
+        df_crime = df_crime.dropna(subset=['Latitude', 'Longitude'])
+        crime_dfs.append(df_crime)
+        i=i+1
+        if i > 4:
+            break
+
+    all_crime = pd.concat(crime_dfs)
+    crime_arr = all_crime[['Latitude', 'Longitude']].values
+    m.add_child(plugins.HeatMap(crime_arr, radius=10))
 
 
 # Crime Points

@@ -20,7 +20,7 @@ m = folium.Map(
 )
 
 # Police force boundaries
-if False :
+if False:
     force_geo = 'police_data/boundaries/force_geo'
     folium.GeoJson(f'{force_geo}/metropolitan.geojson', name='metro').add_to(m)
     folium.GeoJson(f'{force_geo}/city-of-london.geojson', name='city').add_to(m)
@@ -32,11 +32,9 @@ if False:
     neighborood_geo = 'police_data/boundaries/neighborhood/2019-03'
     for path in glob.glob(f'{neighborood_geo}/*/*.geojson'):
         name = os.path.basename(path)
-        folium.GeoJson(path,
-            name=name,
-            tooltip=folium.features.Tooltip(name, sticky=False),
-        ).add_to(m)
-
+        folium.GeoJson(path, name=name,
+                       tooltip=folium.features.Tooltip(name, sticky=False),
+                       ).add_to(m)
 
 # Crime HeatMap
 if True:
@@ -44,12 +42,12 @@ if True:
     crime_dfs = []
     i = 0
     for path in glob.glob(f'{crime_data}/*.csv'):
-        df_crime = pd.read_csv(path, usecols = ['Latitude', 'Longitude'])
+        df_crime = pd.read_csv(path, usecols=['Latitude', 'Longitude'])
         df_crime = df_crime.dropna(subset=['Latitude', 'Longitude'])
         crime_dfs.append(df_crime)
-        i=i+1
+        i = i+1
         if i > 4:
-            break
+            break  # Don't overload the map javascript.
 
     all_crime = pd.concat(crime_dfs)
     crime_arr = all_crime[['Latitude', 'Longitude']].values
@@ -58,21 +56,21 @@ if True:
 
 # Crime Points
 if False:
-    #df_crime = pd.DataFrame(df_crime, columns = ['Latitude','Longitude', 'LSOA code', 'Crime type'])
-    crime_layer = folium.FeatureGroup(name = 'Crime Locations')
+    # df_crime = pd.DataFrame(df_crime, columns = ['Latitude','Longitude', 'LSOA code', 'Crime type'])
+    crime_layer = folium.FeatureGroup(name='Crime Locations')
     for i, row in df_crime.iterrows():
         crime_layer.add_child(
             folium.CircleMarker([row['Latitude'], row['Longitude']],
-                            popup=row['Crime type'],
-                            radius=5,
-                            fill_color="#3db7e4", # divvy color
-                            ) )
+                                popup=row['Crime type'],
+                                radius=5,
+                                fill_color="#3db7e4",
+                                ))
         if i > 100000:
             break
     m.add_child(crime_layer)
 
 folium.LayerControl().add_to(m)
 
-m.save(os.path.join('results', 'ControlScale.html'))
+m.save(os.path.join('results', 'LondonCrime.html'))
 
 m

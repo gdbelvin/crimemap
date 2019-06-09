@@ -71,6 +71,6 @@ if False:
 
 folium.LayerControl().add_to(m)
 
-m.save(os.path.join('results', 'LondonCrime.html'))
+m.save('index.html')
 
 m
